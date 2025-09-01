@@ -1,13 +1,16 @@
 package io.netty.nat.test;
 
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
 @Slf4j
@@ -24,7 +27,20 @@ public class NettyNativeTestApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         try {
-            String result = WebClient.create("https://www.google.com")
+            SslContext sslContext = SslContextBuilder.forClient()
+                .protocols("TLSv1.2", "TLSv1.3")
+                .build();
+
+            HttpClient httpClient = HttpClient.create()
+                .secure(ssl -> ssl.sslContext(sslContext));
+
+            WebClient webClient = WebClient
+                .builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .baseUrl("https://www.google.com")
+                .build();
+
+            String result = webClient
                 .get()
                 .uri("/")
                 .accept(MediaType.TEXT_PLAIN)
@@ -39,7 +55,7 @@ public class NettyNativeTestApplication implements CommandLineRunner {
 
     private static class ExitCodeGeneratorException extends RuntimeException implements ExitCodeGenerator {
 
-        public ExitCodeGeneratorException(Throwable e){
+        public ExitCodeGeneratorException(Throwable e) {
             super(e);
         }
 
