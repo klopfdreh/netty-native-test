@@ -15,3 +15,4 @@ to find the image id
 docker run --rm testimg
 ``` 
 to run the actual image
+7. Install netty-submodules locally and apply them into pom.xml at `<!-- apply the local build dependencies of netty with debug code here -->`
