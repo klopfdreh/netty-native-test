@@ -9,8 +9,11 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
-        <spring-boot-maven-plugin.version>3.5.5</spring-boot-maven-plugin.version>
+        <spring-boot.version>3.5.5</spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -18,7 +21,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.5.5</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -34,13 +37,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
+
         <!--<dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-resolver-dns-native-macos</artifactId>
             <scope>runtime</scope>
-            <classifier>osx-x86_64</classifier>
-            <classifier>osx-aarch_64</classifier>
-        </dependency>-->
+            AMD64: <classifier>osx-x86_64</classifier>
+            ARM64: <classifier>osx-aarch_64</classifier>
+        </dependency> -->
+
+        <!-- apply the local build dependencies of netty with debug code here -->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -52,8 +59,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
+                <version>${spring-boot.version}</version>
                 <executions>
+                    <execution>
+                        <id>process-aot</id>
+                        <goals>
+                            <goal>process-aot</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>spring-boot-jar-package</id>
                         <phase>package</phase>
@@ -65,18 +78,7 @@
                             <classifier>exec</classifier>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>process-aot</id>
-                        <goals>
-                            <goal>process-aot</goal>
-                        </goals>
-                    </execution>
                 </executions>
-                <configuration>
-                    <profiles>
-                        <profile>native_build</profile>
-                    </profiles>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>

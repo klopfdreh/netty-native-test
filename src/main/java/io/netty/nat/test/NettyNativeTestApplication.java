@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
 @Slf4j
-public class NettyNativeTestApplication {
+public class NettyNativeTestApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         System.exit(
@@ -21,22 +21,20 @@ public class NettyNativeTestApplication {
         );
     }
 
-    @Bean
-    public CommandLineRunner myCommandLineRunner() {
-        return args -> {
-            try {
-                String result = WebClient.create("https://www.google.com")
-                    .get()
-                    .uri("/")
-                    .accept(MediaType.TEXT_PLAIN)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-                log.info("result: {}", result);
-            } catch (Exception e) {
-                throw new ExitCodeGeneratorException(e);
-            }
-        };
+    @Override
+    public void run(String... args) throws Exception {
+        try {
+            String result = WebClient.create("https://www.google.com")
+                .get()
+                .uri("/")
+                .accept(MediaType.TEXT_PLAIN)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+            log.info("result: {}", result);
+        } catch (Exception e) {
+            throw new ExitCodeGeneratorException(e);
+        }
     }
 
     private static class ExitCodeGeneratorException extends RuntimeException implements ExitCodeGenerator {

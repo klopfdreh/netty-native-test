@@ -1,4 +1,8 @@
-FROM --platform=linux/amd64 redhat/ubi9-minimal:latest AS builder
+# AMD64
+#FROM --platform=linux/amd64 redhat/ubi9-minimal:latest AS builder
+
+# ARM64
+FROM --platform=linux/arm64 redhat/ubi9-minimal:latest AS builder
 
 ARG RUNTIMEUSER=1001
 
@@ -6,11 +10,17 @@ ENV ARTIFACT_JAR_PATTERN=*-exec.jar
 ENV MAIN_CLASS=io.netty.nat.test.NettyNativeTestApplication
 ENV BINARY_NAME=nettytest
 
-# LINUX
-ENV NIK_TAR_GZ=bellsoft-liberica-vm-openjdk23+38-24.1.0+1-linux-amd64.tar.gz
-ENV NIK_DOWNLOAD_URL=https://github.com/bell-sw/LibericaNIK/releases/download/24.1.0%2B1-23%2B38/${NIK_TAR_GZ}
-ENV NIK_FOLDER=bellsoft-liberica-vm-openjdk23-24.1.0
-ENV NIK_CHECKSUM=b96014c458a45ca8972698ea2b706d480d24bbe4
+# AMD64
+#ENV NIK_TAR_GZ=bellsoft-liberica-vm-openjdk24.0.2+13-24.2.2+1-linux-amd64.tar.gz
+#ENV NIK_DOWNLOAD_URL=https://github.com/bell-sw/LibericaNIK/releases/download/24.2.2%2B1-24.0.2%2B13/${NIK_TAR_GZ}
+#ENV NIK_FOLDER=bellsoft-liberica-vm-openjdk24-24.2.2
+#ENV NIK_CHECKSUM=6c9b220033bf6ddb1c3330e06fd027a33e9096c9
+
+# ARM64
+ENV NIK_TAR_GZ=bellsoft-liberica-vm-openjdk24.0.2+13-24.2.2+1-linux-aarch64.tar.gz
+ENV NIK_DOWNLOAD_URL=https://github.com/bell-sw/LibericaNIK/releases/download/24.2.2%2B1-24.0.2%2B13/${NIK_TAR_GZ}
+ENV NIK_FOLDER=bellsoft-liberica-vm-openjdk24-24.2.2
+ENV NIK_CHECKSUM=58e8695feacddbf8643f4ef193170d7fee992b29
 
 USER root
 
@@ -48,7 +58,11 @@ RUN jar -xvf ${ARTIFACT_JAR_PATTERN} && \
     -o ${BINARY_NAME}
 
 # Create the final runtime image
-FROM --platform=linux/amd64 redhat/ubi9-minimal:latest
+# AMD64
+#FROM --platform=linux/amd64 redhat/ubi9-minimal:latest
+
+# ARM64
+FROM --platform=linux/arm64 redhat/ubi9-minimal:latest
 
 ARG RUNTIMEUSER=1001
 
