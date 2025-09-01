@@ -1,0 +1,7 @@
+org.slf4j.impl
+org.slf4j
+ch.qos.logback.core.spi
+ch.qos.logback.core.status
+ch.qos.logback.classic
+ch.qos.logback.core
+org.springframework.boot.loader.nio.file

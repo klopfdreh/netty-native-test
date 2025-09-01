@@ -1,0 +1,54 @@
+package io.netty.nat.test;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.WebClient;
+
+@SpringBootApplication
+@Slf4j
+public class NettyNativeTestApplication {
+
+    public static void main(String[] args) {
+        System.exit(
+            SpringApplication.exit(
+                SpringApplication.run(NettyNativeTestApplication.class, args)
+            )
+        );
+    }
+
+    @Bean
+    public CommandLineRunner myCommandLineRunner() {
+        return args -> {
+            try {
+                String result = WebClient.create("https://www.google.com")
+                    .get()
+                    .uri("/")
+                    .accept(MediaType.TEXT_PLAIN)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+                log.info("result: {}", result);
+            } catch (Exception e) {
+                throw new ExitCodeGeneratorException(e);
+            }
+        };
+    }
+
+    private static class ExitCodeGeneratorException extends RuntimeException implements ExitCodeGenerator {
+
+        public ExitCodeGeneratorException(Throwable e){
+            super(e);
+        }
+
+        @Override
+        public int getExitCode() {
+            return 1;
+        }
+    }
+
+}

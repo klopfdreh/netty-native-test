@@ -1,0 +1,10 @@
+spring:
+  banner:
+    location: classpath:banner.txt
+  main:
+    web-application-type: none
+    banner-mode: log
+logging:
+  structured:
+    format:
+      console: ecs
